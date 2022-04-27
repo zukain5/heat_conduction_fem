@@ -1,4 +1,4 @@
-#define N 100
+#define N 1000
 #ifdef __cplusplus
 extern "C" {
     extern int select_pivot(double eq[][N+1], int n, int j);
