@@ -12,7 +12,8 @@ void print_eq(double eq[][N+1], int n){
     printf("\n");
 }
 
-void calc_equations(double eq[][N+1], int NE, double L, double Q, double A, double lambda){
+void calc_equations(double eq[][N+1], int NE, double length, double Q, double A, double lambda, int boundary_type_min, int boundary_type_max, double boundary_min, double boundary_max){
+    double L = length / NE;
     for (int i=0; i<NE; i++){
         // K
         double k_abs = lambda * A / L;
@@ -25,6 +26,28 @@ void calc_equations(double eq[][N+1], int NE, double L, double Q, double A, doub
         double f_abs = Q * A * L / 2;
         eq[i][NE+1] += f_abs;
         eq[i+1][NE+1] += f_abs;
+    }
+
+    int n = NE+1;
+
+    if (boundary_type_min == 0){
+        eq[0][0] = 1;
+        for (int j=1; j<n; j++){ eq[0][j] = 0; }
+        eq[0][n] = boundary_min;
+    }
+
+    if (boundary_type_max == 0){
+        eq[n-1][n-1] = 1;
+        for (int j=0; j<n-1; j++){ eq[n-1][j] = 0; }
+        eq[n-1][n] = boundary_max;
+    }
+
+    if (boundary_type_min == 1){
+        eq[0][n] += lambda * A * boundary_min;
+    }
+
+    if (boundary_type_max == 1){
+        eq[n-1][n] += lambda * A * boundary_max;
     }
 }
 
@@ -95,14 +118,20 @@ void solve_equations(double eq[][N+1], int n){
 
 int main(void){
     // 入力
-    int NE = 6;
-    double L = 1.0;
-    double Q = 1.0;
+    int NE = 300;
+    double length = 4.0;
+    double Q = 0.0;
     double A = 1.0;
     double lambda = 1.0;
 
+    // 境界条件
+    int boundary_type_min = 0; // 0が基本・1が自然
+    int boundary_type_max = 0; // 0が基本・1が自然
+    double boundary_min = 0;
+    double boundary_max = 100;
+
     double eq[N][N+1] = {0};
-    calc_equations(eq, NE, L, Q, A, lambda);
+    calc_equations(eq, NE, length, Q, A, lambda, boundary_type_min, boundary_type_max, boundary_min, boundary_max);
     solve_equations(eq, NE+1);
 
     return 0;

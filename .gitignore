@@ -1,1 +1,4 @@
 *.out
+.vscode/
+1dim_fem.dSYM/
+1dim_fem
