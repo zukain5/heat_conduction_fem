@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "1dim_fem.h"
 
+typedef double(* Q_FUNC)(double); 
+
 void print_eq(double eq[][N+1], int n){
     for (int i=0; i<n; i++){
         for (int j=0; j<n+1; j++){
@@ -138,7 +140,7 @@ double min(double l[N], int n){
     return min_value;
 }
 
-void visualize(double x[N], double y[N], int n){
+void visualize(double x[N+1], double y[N+1], int n){
     FILE *gp;
     if ((gp = popen("gnuplot -persist", "w")) == NULL) {
         printf("Can't open gnuplot.");
@@ -161,6 +163,24 @@ void visualize(double x[N], double y[N], int n){
     }
 }
 
+void calc_Q_from_fucntion(Q_FUNC pfunc, int NE, double Q[N+1], double x[N]){
+    for (int i=0; i<=NE; i++){
+        Q[i] = pfunc(x[i]);
+    }
+}
+
+double Q_zero(double x){
+    return 0.;
+}
+
+double Q_one(double x){
+    return 1.;
+}
+
+double Q_linear(double x){
+    return x;
+}
+
 int main(void){
     // 入力
     int NE = 300;
@@ -172,20 +192,22 @@ int main(void){
 
     // 境界条件
     int boundary_type_min = 0; // 0が基本・1が自然
-    int boundary_type_max = 0; // 0が基本・1が自然
+    int boundary_type_max = 1; // 0が基本・1が自然
     double boundary_min = 0;
-    double boundary_max = 100;
+    double boundary_max = 0;
+
+    double x[N+1] = {0};
+    for (int i=0; i<=NE; i++){
+        x[i] = length / NE * i;
+    }
+
+    calc_Q_from_fucntion(Q_linear, NE, Q, x);
 
     double eq[N][N+1] = {0};
     calc_equations(eq, NE, length, Q, A, lambda, boundary_type_min, boundary_type_max, boundary_min, boundary_max);
 
-    double ans[N] = {0};
+    double ans[N+1] = {0};
     solve_equations(eq, NE+1, ans);
-
-    double x[N] = {0};
-    for (int i=0; i<=NE; i++){
-        x[i] = length / NE * i;
-    }
 
     visualize(x, ans, NE+1);
 
