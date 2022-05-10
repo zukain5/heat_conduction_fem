@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "1dim_fem.h"
 
+typedef double(* Q_FUNC)(double, double *); 
+
 void print_eq(double eq[][N+1], int n){
     for (int i=0; i<n; i++){
         for (int j=0; j<n+1; j++){
@@ -12,7 +14,7 @@ void print_eq(double eq[][N+1], int n){
     printf("\n");
 }
 
-void calc_equations(double eq[][N+1], int NE, double length, double Q, double A, double lambda, int boundary_type_min, int boundary_type_max, double boundary_min, double boundary_max){
+void calc_equations(double eq[][N+1], int NE, double length, double Q[N+1], double A, double lambda, int boundary_type_min, int boundary_type_max, double boundary_min, double boundary_max){
     double L = length / NE;
     for (int i=0; i<NE; i++){
         // K
@@ -23,9 +25,8 @@ void calc_equations(double eq[][N+1], int NE, double length, double Q, double A,
         eq[i+1][i+1] += k_abs;
         
         // f
-        double f_abs = Q * A * L / 2;
-        eq[i][NE+1] += f_abs;
-        eq[i+1][NE+1] += f_abs;
+        eq[i][NE+1] += A * L * (2 * Q[i] + Q[i+1]) / 6;
+        eq[i+1][NE+1] += A * L * (Q[i] + 2 * Q[i+1]) / 6;
     }
 
     int n = NE+1;
@@ -139,7 +140,7 @@ double min(double l[N], int n){
     return min_value;
 }
 
-void visualize(double x[N], double y[N], int n){
+void visualize(double x[N+1], double y[N+1], int n){
     FILE *gp;
     if ((gp = popen("gnuplot -persist", "w")) == NULL) {
         printf("Can't open gnuplot.");
@@ -162,13 +163,30 @@ void visualize(double x[N], double y[N], int n){
     }
 }
 
+void calc_Q_from_fucntion(Q_FUNC pfunc, int NE, double Q[N+1], double x[N], double *params){
+    for (int i=0; i<=NE; i++){
+        Q[i] = pfunc(x[i], params);
+    }
+}
+
+double Q_const(double x, double *params){
+    double constant = params[0];
+    return constant;
+}
+
+double Q_linear(double x, double *params){
+    double coefficient = params[0];
+    return coefficient * x;
+}
+
 int main(void){
     // 入力
     int NE = 300;
     double length = 4.0;
-    double Q = 1.0;
     double A = 1.0;
     double lambda = 1.0;
+
+    double Q[N+1] = {0};
 
     // 境界条件
     int boundary_type_min = 0; // 0が基本・1が自然
@@ -176,16 +194,19 @@ int main(void){
     double boundary_min = 0;
     double boundary_max = 0;
 
-    double eq[N][N+1] = {0};
-    calc_equations(eq, NE, length, Q, A, lambda, boundary_type_min, boundary_type_max, boundary_min, boundary_max);
-
-    double ans[N] = {0};
-    solve_equations(eq, NE+1, ans);
-
-    double x[N] = {0};
+    double x[N+1] = {0};
     for (int i=0; i<=NE; i++){
         x[i] = length / NE * i;
     }
+
+    double params[] = {1};
+    calc_Q_from_fucntion(Q_linear, NE, Q, x, params);
+
+    double eq[N][N+1] = {0};
+    calc_equations(eq, NE, length, Q, A, lambda, boundary_type_min, boundary_type_max, boundary_min, boundary_max);
+
+    double ans[N+1] = {0};
+    solve_equations(eq, NE+1, ans);
 
     visualize(x, ans, NE+1);
 
