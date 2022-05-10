@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "1dim_fem.h"
 
-typedef double(* Q_FUNC)(double); 
+typedef double(* Q_FUNC)(double, double *); 
 
 void print_eq(double eq[][N+1], int n){
     for (int i=0; i<n; i++){
@@ -163,22 +163,20 @@ void visualize(double x[N+1], double y[N+1], int n){
     }
 }
 
-void calc_Q_from_fucntion(Q_FUNC pfunc, int NE, double Q[N+1], double x[N]){
+void calc_Q_from_fucntion(Q_FUNC pfunc, int NE, double Q[N+1], double x[N], double *params){
     for (int i=0; i<=NE; i++){
-        Q[i] = pfunc(x[i]);
+        Q[i] = pfunc(x[i], params);
     }
 }
 
-double Q_zero(double x){
-    return 0.;
+double Q_const(double x, double *params){
+    double constant = params[0];
+    return constant;
 }
 
-double Q_one(double x){
-    return 1.;
-}
-
-double Q_linear(double x){
-    return x;
+double Q_linear(double x, double *params){
+    double coefficient = params[0];
+    return coefficient * x;
 }
 
 int main(void){
@@ -201,7 +199,8 @@ int main(void){
         x[i] = length / NE * i;
     }
 
-    calc_Q_from_fucntion(Q_linear, NE, Q, x);
+    double params[] = {1};
+    calc_Q_from_fucntion(Q_linear, NE, Q, x, params);
 
     double eq[N][N+1] = {0};
     calc_equations(eq, NE, length, Q, A, lambda, boundary_type_min, boundary_type_max, boundary_min, boundary_max);
