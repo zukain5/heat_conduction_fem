@@ -148,6 +148,8 @@ void visualize(double x[N], double y[N], int n){
 
     fprintf(gp, "set xrange [%lf:%lf]\n", min(x, n), max(x, n));
     fprintf(gp, "set yrange [%lf:%lf]\n", min(y, n), max(y, n));
+    fprintf(gp, "set xlabel \"x\"\n");
+    fprintf(gp, "set ylabel \"Temperature\"\n");
     fprintf(gp, "plot '-' with lines linetype 1 title \"Temperature\"\n");
 
     for (int i=0; i<n; i++){
