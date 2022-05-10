@@ -12,7 +12,7 @@ void print_eq(double eq[][N+1], int n){
     printf("\n");
 }
 
-void calc_equations(double eq[][N+1], int NE, double length, double Q, double A, double lambda, int boundary_type_min, int boundary_type_max, double boundary_min, double boundary_max){
+void calc_equations(double eq[][N+1], int NE, double length, double Q[N+1], double A, double lambda, int boundary_type_min, int boundary_type_max, double boundary_min, double boundary_max){
     double L = length / NE;
     for (int i=0; i<NE; i++){
         // K
@@ -23,9 +23,8 @@ void calc_equations(double eq[][N+1], int NE, double length, double Q, double A,
         eq[i+1][i+1] += k_abs;
         
         // f
-        double f_abs = Q * A * L / 2;
-        eq[i][NE+1] += f_abs;
-        eq[i+1][NE+1] += f_abs;
+        eq[i][NE+1] += A * L * (2 * Q[i] + Q[i+1]) / 6;
+        eq[i+1][NE+1] += A * L * (Q[i] + 2 * Q[i+1]) / 6;
     }
 
     int n = NE+1;
@@ -166,15 +165,16 @@ int main(void){
     // 入力
     int NE = 300;
     double length = 4.0;
-    double Q = 1.0;
     double A = 1.0;
     double lambda = 1.0;
 
+    double Q[N+1] = {0};
+
     // 境界条件
     int boundary_type_min = 0; // 0が基本・1が自然
-    int boundary_type_max = 1; // 0が基本・1が自然
+    int boundary_type_max = 0; // 0が基本・1が自然
     double boundary_min = 0;
-    double boundary_max = 0;
+    double boundary_max = 100;
 
     double eq[N][N+1] = {0};
     calc_equations(eq, NE, length, Q, A, lambda, boundary_type_min, boundary_type_max, boundary_min, boundary_max);
