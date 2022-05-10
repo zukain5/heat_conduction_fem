@@ -102,7 +102,7 @@ void subtract_row(double eq[][N+1], int n, int diagnoal_i){
     }
 }
 
-void solve_equations(double eq[][N+1], int n){
+void solve_equations(double eq[][N+1], int n, double ans[N]){
     // 1列ずつ消去していく
     for (int j=0; j<n; j++){
         int pivot_i = select_pivot(eq, n, j);
@@ -112,7 +112,51 @@ void solve_equations(double eq[][N+1], int n){
     }
 
     for (int i=0; i<n; i++){
-        printf("%lf\n", eq[i][n]);
+        ans[i] = eq[i][n];
+        printf("%lf\n", ans[i]);
+    }
+}
+
+double max(double l[N], int n){
+    double max_value = l[0];
+    for (int i=1; i<n; i++){
+        if (l[i]>max_value){
+            max_value = l[i];
+        }
+    }
+    
+    return max_value;
+}
+
+double min(double l[N], int n){
+    double min_value = l[0];
+    for (int i=1; i<n; i++){
+        if (l[i]<min_value){
+            min_value = l[i];
+        }
+    }
+    
+    return min_value;
+}
+
+void visualize(double x[N], double y[N], int n){
+    FILE *gp;
+    if ((gp = popen("gnuplot -persist", "w")) == NULL) {
+        printf("Can't open gnuplot.");
+        exit(0);
+    }
+
+    fprintf(gp, "set xrange [%lf:%lf]\n", min(x, n), max(x, n));
+    fprintf(gp, "set yrange [%lf:%lf]\n", min(y, n), max(y, n));
+    fprintf(gp, "plot '-' with lines linetype 1 title \"Temperature\"\n");
+
+    for (int i=0; i<n; i++){
+        fprintf(gp, "%lf\t%lf\n", x[i], y[i]);
+    }
+
+    if (pclose(gp) == EOF) {
+        printf("Can't close gnuplot.");
+        exit(0);
     }
 }
 
@@ -120,19 +164,28 @@ int main(void){
     // 入力
     int NE = 300;
     double length = 4.0;
-    double Q = 0.0;
+    double Q = 1.0;
     double A = 1.0;
     double lambda = 1.0;
 
     // 境界条件
     int boundary_type_min = 0; // 0が基本・1が自然
-    int boundary_type_max = 0; // 0が基本・1が自然
+    int boundary_type_max = 1; // 0が基本・1が自然
     double boundary_min = 0;
-    double boundary_max = 100;
+    double boundary_max = 0;
 
     double eq[N][N+1] = {0};
     calc_equations(eq, NE, length, Q, A, lambda, boundary_type_min, boundary_type_max, boundary_min, boundary_max);
-    solve_equations(eq, NE+1);
+
+    double ans[N] = {0};
+    solve_equations(eq, NE+1, ans);
+
+    double x[N] = {0};
+    for (int i=0; i<=NE; i++){
+        x[i] = length / NE * i;
+    }
+
+    visualize(x, ans, NE+1);
 
     return 0;
 }
