@@ -1,4 +1,5 @@
 #include <CppUTest/CommandLineTestRunner.h>
+#include "define.h"
 #include "1dim_fem.h"
 
 double eq[N][N+1]={0};
