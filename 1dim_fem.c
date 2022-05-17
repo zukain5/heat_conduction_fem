@@ -195,6 +195,12 @@ double Q_linear(double x, double *params){
     return coefficient * x;
 }
 
+void fem_solver(double ans[N+1], fem_parameter fem, boundary_condition bound){
+    double eq[N][N+1] = {0};
+    calc_equations(eq, fem, bound);
+    solve_equations(eq, fem.NE+1, ans);
+}
+
 int main(void){
     fem_parameter fem;
     fem.NE = 300;
@@ -221,11 +227,8 @@ int main(void){
 
     fem.Q = &Q;
 
-    double eq[N][N+1] = {0};
-    calc_equations(eq, fem, bound);
-
     double ans[N+1] = {0};
-    solve_equations(eq, fem.NE+1, ans);
+    fem_solver(ans, fem, bound);
 
     visualize(x, ans, fem.NE+1);
 
