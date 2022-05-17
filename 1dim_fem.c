@@ -2,7 +2,23 @@
 #include <stdlib.h>
 #include "1dim_fem.h"
 
-typedef double(* Q_FUNC)(double, double *); 
+typedef double(* Q_FUNC)(double, double *);
+
+typedef struct {
+    int NE;
+    double length;
+    double A;
+    double lambda;
+    double *Q;
+} fem_parameter;
+
+typedef struct {
+    // 境界条件
+    int type_min; // 0が基本・1が自然
+    int type_max; // 0が基本・1が自然
+    double value_min;
+    double value_max;
+} boundary_condition;
 
 void print_eq(double eq[][N+1], int n){
     for (int i=0; i<n; i++){
@@ -14,41 +30,41 @@ void print_eq(double eq[][N+1], int n){
     printf("\n");
 }
 
-void calc_equations(double eq[][N+1], int NE, double length, double Q[N+1], double A, double lambda, int boundary_type_min, int boundary_type_max, double boundary_min, double boundary_max){
-    double L = length / NE;
-    for (int i=0; i<NE; i++){
+void calc_equations(double eq[][N+1], fem_parameter fem, boundary_condition bound){
+    double L = fem.length / fem.NE;
+    for (int i=0; i<fem.NE; i++){
         // K
-        double k_abs = lambda * A / L;
+        double k_abs = fem.lambda * fem.A / L;
         eq[i][i] += k_abs;
         eq[i][i+1] -= k_abs;
         eq[i+1][i] -= k_abs;
         eq[i+1][i+1] += k_abs;
         
         // f
-        eq[i][NE+1] += A * L * (2 * Q[i] + Q[i+1]) / 6;
-        eq[i+1][NE+1] += A * L * (Q[i] + 2 * Q[i+1]) / 6;
+        eq[i][fem.NE+1] += fem.A * L * (2 * fem.Q[i] + fem.Q[i+1]) / 6;
+        eq[i+1][fem.NE+1] += fem.A * L * (fem.Q[i] + 2 * fem.Q[i+1]) / 6;
     }
 
-    int n = NE+1;
+    int n = fem.NE+1;
 
-    if (boundary_type_min == 0){
+    if (bound.type_min == 0){
         eq[0][0] = 1;
         for (int j=1; j<n; j++){ eq[0][j] = 0; }
-        eq[0][n] = boundary_min;
+        eq[0][n] = bound.value_min;
     }
 
-    if (boundary_type_max == 0){
+    if (bound.type_max == 0){
         eq[n-1][n-1] = 1;
         for (int j=0; j<n-1; j++){ eq[n-1][j] = 0; }
-        eq[n-1][n] = boundary_max;
+        eq[n-1][n] = bound.value_max;
     }
 
-    if (boundary_type_min == 1){
-        eq[0][n] += lambda * A * boundary_min;
+    if (bound.type_min == 1){
+        eq[0][n] += fem.lambda * fem.A * bound.value_min;
     }
 
-    if (boundary_type_max == 1){
-        eq[n-1][n] += lambda * A * boundary_max;
+    if (bound.type_max == 1){
+        eq[n-1][n] += fem.lambda * fem.A * bound.value_max;
     }
 }
 
@@ -180,35 +196,38 @@ double Q_linear(double x, double *params){
 }
 
 int main(void){
-    // 入力
-    int NE = 300;
-    double length = 4.0;
-    double A = 1.0;
-    double lambda = 1.0;
+    fem_parameter fem;
+    fem.NE = 300;
+    fem.length = 4.0;
+    fem.A = 1.0;
+    fem.lambda = 1.0;
 
     double Q[N+1] = {0};
 
     // 境界条件
-    int boundary_type_min = 0; // 0が基本・1が自然
-    int boundary_type_max = 1; // 0が基本・1が自然
-    double boundary_min = 0;
-    double boundary_max = 0;
+    boundary_condition bound;
+    bound.type_min = 0; // 0が基本・1が自然
+    bound.type_max = 1; // 0が基本・1が自然
+    bound.value_min = 0;
+    bound.value_max = 0;
 
     double x[N+1] = {0};
-    for (int i=0; i<=NE; i++){
-        x[i] = length / NE * i;
+    for (int i=0; i<=fem.NE; i++){
+        x[i] = fem.length / fem.NE * i;
     }
 
     double params[] = {1};
-    calc_Q_from_fucntion(Q_linear, NE, Q, x, params);
+    calc_Q_from_fucntion(Q_linear, fem.NE, Q, x, params);
+
+    fem.Q = &Q;
 
     double eq[N][N+1] = {0};
-    calc_equations(eq, NE, length, Q, A, lambda, boundary_type_min, boundary_type_max, boundary_min, boundary_max);
+    calc_equations(eq, fem, bound);
 
     double ans[N+1] = {0};
-    solve_equations(eq, NE+1, ans);
+    solve_equations(eq, fem.NE+1, ans);
 
-    visualize(x, ans, NE+1);
+    visualize(x, ans, fem.NE+1);
 
     return 0;
 }
