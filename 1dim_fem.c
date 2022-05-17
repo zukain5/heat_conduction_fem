@@ -103,7 +103,6 @@ void _solve_equations(double eq[][N+1], int n, double ans[N]){
 
     for (int i=0; i<n; i++){
         ans[i] = eq[i][n];
-        printf("%lf\n", ans[i]);
     }
 }
 

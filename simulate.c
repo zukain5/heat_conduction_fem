@@ -1,5 +1,7 @@
 #include "1dim_fem.h"
 #include "utility.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 int main(void){
     fem_parameter fem;
@@ -7,8 +9,6 @@ int main(void){
     fem.length = 4.0;
     fem.A = 1.0;
     fem.lambda = 1.0;
-
-    double Q[N+1] = {0};
 
     // 境界条件
     boundary_condition bound;
@@ -22,15 +22,30 @@ int main(void){
         x[i] = fem.length / fem.NE * i;
     }
 
-    double params[] = {1};
-    calc_Q_from_fucntion(Q_linear, fem.NE, Q, x, params);
+    int series_num = 10;
+    double params[1] = {0};
 
-    fem.Q = &Q;
+    FILE *fp;
+    if ((fp = fopen("SNAPSHOT", "w")) == NULL){
+        printf("Cannot open SNAPSHOT.");
+        exit(0);
+    }
 
-    double ans[N+1] = {0};
-    fem_solver(ans, fem, bound);
+    for (int i=0; i<series_num; i++){
+        params[0] = i+1;
+        double Q[N+1] = {0};
+        calc_Q_from_fucntion(Q_const, fem.NE, Q, x, params);
 
-    visualize(x, ans, fem.NE+1);
+        fem.Q = &Q;
+
+        double ans[N+1] = {0};
+        fem_solver(ans, fem, bound);
+        for (int j=0; j<=fem.NE; j++){
+            fprintf(fp, "%lf\n", ans[j]);
+        }
+    }
+
+    fclose(fp);
 
     return 0;
 }
