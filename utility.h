@@ -8,3 +8,11 @@ void visualize(double x[N+1], double y[N+1], int n);
 void calc_Q_from_fucntion(Q_FUNC pfunc, int NE, double Q[N+1], double x[N], double *params);
 double Q_const(double x, double *params);
 double Q_linear(double x, double *params);
+
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+int generate_params_linear(int params_count, double params_all[][PARAMS_MAX], double params_range[][3]);
+#ifdef __cplusplus
+}
+#endif  // __cplusplus

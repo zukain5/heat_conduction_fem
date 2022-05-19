@@ -1,5 +1,8 @@
+*
+!*/
+!*.*
 *.out
 *.o
+*.csv
 .vscode/
 1dim_fem.dSYM/
-1dim_fem

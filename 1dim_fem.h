@@ -16,4 +16,14 @@ typedef struct {
     double value_max;
 } boundary_condition;
 
+#ifdef __cplusplus
+extern "C" {
+    extern int _select_pivot(double eq[][N+1], int n, int j);
+    extern void _swap_row(double eq[][N+1], int n, int pivot_i, int diagonal_i);
+    extern void _normalize_row(double eq[][N+1], int n, int diagonal_i);
+    extern void _subtract_row(double eq[][N+1], int n, int diagnoal_i);
+    extern void _solve_equations(double eq[][N+1], int n, double ans[N]);
+}
+#endif  // __cplusplus
+
 void fem_solver(double ans[N+1], fem_parameter fem, boundary_condition bound);

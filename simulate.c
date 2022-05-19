@@ -1,14 +1,15 @@
 #include "1dim_fem.h"
 #include "utility.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
 int main(void){
     fem_parameter fem;
-    fem.NE = 300;
+    fem.NE = 100;
     fem.length = 4.0;
     fem.A = 1.0;
     fem.lambda = 1.0;
-
-    double Q[N+1] = {0};
 
     // 境界条件
     boundary_condition bound;
@@ -22,15 +23,56 @@ int main(void){
         x[i] = fem.length / fem.NE * i;
     }
 
-    double params[] = {1};
-    calc_Q_from_fucntion(Q_linear, fem.NE, Q, x, params);
+    int params_count = 1;
 
-    fem.Q = &Q;
+    double params_all[SERIES_MAX][PARAMS_MAX] = {0};
+    double params_range[][3] = {
+        {0.0, 1.0, 10},
+    };
 
-    double ans[N+1] = {0};
-    fem_solver(ans, fem, bound);
+    int series_num = generate_params_linear(params_count, params_all, params_range);
+    double sample_rate = 0.1;
 
-    visualize(x, ans, fem.NE+1);
+    FILE *fp_snapshot;
+    if ((fp_snapshot = fopen("SNAPSHOT", "w")) == NULL){
+        printf("Cannot open SNAPSHOT.");
+        exit(0);
+    }
+
+    FILE *fp_outputall;
+    if ((fp_outputall = fopen("OUTPUTALL.csv", "w")) == NULL){
+        printf("Cannot open OUTPUTALL.csv.");
+        exit(0);
+    }
+
+    for (int i=0; i<series_num; i++){
+        double params[PARAMS_MAX] = {0};
+        for (int j=0; j<params_count; j++){
+            params[j] = params_all[i][j];
+        }
+        double Q[N+1] = {0};
+        calc_Q_from_fucntion(Q_const, fem.NE, Q, x, params);
+
+        fem.Q = &Q;
+
+        double ans[N+1] = {0};
+        fem_solver(ans, fem, bound);
+        for (int j=0; j<=fem.NE; j++){
+            for (int k=0; k<params_count; k++){
+                fprintf(fp_outputall, "%lf,", params[k]);
+            }
+            fprintf(fp_outputall, "%lf\n", ans[j]);
+        }
+
+        if (floor(i*sample_rate) > floor((i-1)*sample_rate)){
+            for (int j=0; j<=fem.NE; j++){
+                fprintf(fp_snapshot, "%lf\n", ans[j]);
+            }            
+        }
+    }
+
+    fclose(fp_snapshot);
+    fclose(fp_outputall);
 
     return 0;
 }
