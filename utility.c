@@ -106,8 +106,7 @@ double Q_devide_3_single(double x, double *params){
 double Q_normal_dist(double x, double *params){
     double mu = params[0];
     double sigma = params[1];
-    double coeff = params[2];
-    return coeff * exp(-(x-mu)*(x-mu)/(2 * sigma * sigma))/(sqrt(2*M_PI)*sigma);
+    return exp(-(x-mu)*(x-mu)/(2 * sigma * sigma))/(sqrt(2*M_PI)*sigma);
 }
 
 int generate_params_linear(int params_count, double params_all[][PARAMS_MAX], double params_range[][3]){

@@ -22,7 +22,7 @@ PYTHON			= python
 EVALUEATE_TARGET= evaluate_basis.py
 
 OUTPUTS			= SNAPSHOT PARAMETERS OUTPUTALL.csv error_values.csv basis_mode.png error.png
-SAVE_OUTPUTS	= 02_Vk basis_mode.png error_values.csv error.png
+SAVE_OUTPUTS	= 02_Vk basis_mode.png error_values.csv error.png OUTPUTALL.csv SETTINGS
 SAVE_DIR		= ./result
 
 

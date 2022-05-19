@@ -26,15 +26,20 @@ def main():
     ys = df.iloc[:, params_count:].values
 
     error_values = []
+    errors = []
     for y in ys:
         y = np.matrix(y).T
         a = multiplier * y
         error = y - basis * a
+        errors.append(error.T.tolist()[0])
         error_values.append(np.linalg.norm(np.array(error)))
 
+    df_error = pd.DataFrame(errors, columns=[f'error{i+1}' for i in range(n)])
     df['error_value'] = error_values
+    df = pd.concat([df, df_error], axis=1)
     output_l = [f'param{i+1}' for i in range(params_count)]
     output_l.append('error_value')
+    output_l += [f'error{i+1}' for i in range(n)]
     df[output_l].to_csv('error_values.csv', encoding='utf-8-sig')
 
     if params_count == 1:
