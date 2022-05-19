@@ -4,6 +4,7 @@
 *.out
 *.o
 *.csv
+*.png
 .vscode/
 1dim_fem.dSYM/
 !Pipfile
