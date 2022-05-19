@@ -1,6 +1,7 @@
 #include <CppUTest/CommandLineTestRunner.h>
 #include "define.h"
 #include "1dim_fem.h"
+#include "utility.h"
 
 double eq[N][N+1]={0};
 double ans[N+1]={0};
@@ -85,7 +86,30 @@ TEST (TestFuncGroup, solve_equations){
     DOUBLES_EQUAL(3 ,eq[2][3], TOLERANCE);     
 }
 
+TEST (TestFuncGroup, generate_params_linear){
+    int params_count = 2;
+    double params_all[SERIES_MAX][PARAMS_MAX] = {0};
+    double params_range[][3] = {
+        {0, 1, 2},
+        {20, 30, 1},
+    };
+    
+    int series_count = generate_params_linear(params_count, params_all, params_range);
 
+    DOUBLES_EQUAL(0.0 ,params_all[0][0], TOLERANCE);    
+    DOUBLES_EQUAL(20. ,params_all[0][1], TOLERANCE);
+    DOUBLES_EQUAL(0.5 ,params_all[1][0], TOLERANCE);
+    DOUBLES_EQUAL(20. ,params_all[1][1], TOLERANCE);
+    DOUBLES_EQUAL(1.0 ,params_all[2][0], TOLERANCE);
+    DOUBLES_EQUAL(20. ,params_all[2][1], TOLERANCE);
+    DOUBLES_EQUAL(0.0 ,params_all[3][0], TOLERANCE);
+    DOUBLES_EQUAL(30. ,params_all[3][1], TOLERANCE);
+    DOUBLES_EQUAL(0.5 ,params_all[4][0], TOLERANCE);
+    DOUBLES_EQUAL(30. ,params_all[4][1], TOLERANCE);
+    DOUBLES_EQUAL(1.0 ,params_all[5][0], TOLERANCE);
+    DOUBLES_EQUAL(30. ,params_all[5][1], TOLERANCE);
+    CHECK_EQUAL(6, series_count);
+}
 
 int main(int ac, char** av){
     return CommandLineTestRunner::RunAllTests(ac, av);

@@ -79,3 +79,41 @@ double Q_linear(double x, double *params){
     double coefficient = params[0];
     return coefficient * x;
 }
+
+int generate_params_linear(int params_count, double params_all[][PARAMS_MAX], double params_range[][3]){
+    int loop[SERIES_MAX] = {0};
+    int loop_max[SERIES_MAX] = {0};
+    double step[PARAMS_MAX] = {0};
+
+    for (int i=0; i<params_count; i++){
+        double param_min = params_range[i][0];
+        double param_max = params_range[i][1];
+        double param_devide_count = params_range[i][2];
+        loop_max[i] = param_devide_count + 1;
+        step[i] = (param_max - param_min) / param_devide_count;
+    }
+
+    int series_count = 0;
+    int i=0;
+    while (1){
+        for (int j=0; j<params_count; j++){
+            params_all[series_count][j] = params_range[j][0] + step[j] * loop[j];
+        }
+
+        series_count++;
+
+        for (i=0; i<params_count; i++){
+            loop[i]++;
+            if (loop[i]<loop_max[i]){
+                break;
+            }
+            loop[i] = 0;
+        }
+
+        if (i == params_count){
+            break;
+        }
+    }
+
+    return series_count;
+}

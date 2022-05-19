@@ -1,7 +1,7 @@
 TARGET      	= simulate.out
 TEST_TARGET		= test.out
 SRCS        	= 1dim_fem.c utility.c simulate.c
-TEST_SRCS		= test.cpp 1dim_fem.c
+TEST_SRCS		= test.cpp 1dim_fem.c utility.c
 OBJS        	= $(SRCS:.c=.o)
 TEST_OBJS		= $(TEST_SRCS:.c=.o)
 CC          	= gcc
