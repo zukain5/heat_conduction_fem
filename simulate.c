@@ -45,6 +45,8 @@ int main(void){
         exit(0);
     }
 
+    int sample_count = 0;
+
     for (int i=0; i<series_num; i++){
         double params[PARAMS_MAX] = {0};
         for (int j=0; j<params_count; j++){
@@ -69,14 +71,26 @@ int main(void){
         fprintf(fp_outputall, "\n");
 
         if (floor(i*sample_rate) > floor((i-1)*sample_rate)){
+            sample_count++;
             for (int j=0; j<=fem.NE; j++){
                 fprintf(fp_snapshot, "%lf\n", ans[j]);
             }            
         }
     }
 
+    int basis_count = 1;
+
+    FILE *fp_parameters;
+    if ((fp_parameters = fopen("PARAMETERS", "w")) == NULL){
+        printf("Cannot open PARAMETERS.");
+        exit(0);
+    }
+
+    fprintf(fp_parameters, "%d\n%d\n%d\n", fem.NE+1, sample_count, basis_count);
+
     fclose(fp_snapshot);
     fclose(fp_outputall);
+    fclose(fp_parameters);
 
     return 0;
 }
