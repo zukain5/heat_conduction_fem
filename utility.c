@@ -1,6 +1,7 @@
 #include "utility.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "define.h"
 
 /**
@@ -89,6 +90,24 @@ double Q_devide_3(double x, double *params){
     } else {
         return params[1]*(length - x)/(length/3);
     }
+}
+
+double Q_devide_3_single(double x, double *params){
+    double length = 4.0;
+    if (fabs(x - length/3) < 0.02){
+        return params[0];
+    } else if (fabs(x - length * 2/3) < 0.02){
+        return params[1];
+    } else {
+        return 0;
+    }
+}
+
+double Q_normal_dist(double x, double *params){
+    double mu = params[0];
+    double sigma = params[1];
+    double coeff = params[2];
+    return coeff * exp(-(x-mu)*(x-mu)/(2 * sigma * sigma))/(sqrt(2*M_PI)*sigma);
 }
 
 int generate_params_linear(int params_count, double params_all[][PARAMS_MAX], double params_range[][3]){

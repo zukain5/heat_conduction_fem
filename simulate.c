@@ -75,7 +75,13 @@ int main(void){
             params[j] = params_all[i][j];
         }
         double Q[N+1] = {0};
-        calc_Q_from_fucntion(Q_devide_3, fem.NE, Q, x, params);
+        calc_Q_from_fucntion(Q_normal_dist, fem.NE, Q, x, params);
+
+        // if (i==250){
+        //     for (int j=0; j<=fem.NE; j++){
+        //         printf("%lf\n", Q[j]);
+        //     }
+        // }
 
         fem.Q = &Q;
 

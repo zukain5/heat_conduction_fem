@@ -9,6 +9,9 @@ void calc_Q_from_fucntion(Q_FUNC pfunc, int NE, double Q[N+1], double x[N], doub
 double Q_const(double x, double *params);
 double Q_linear(double x, double *params);
 double Q_devide_3(double x, double *params);
+double Q_devide_3_single(double x, double *params);
+double Q_normal_dist(double x, double *params);
+
 
 #ifdef __cplusplus
 extern "C" {
