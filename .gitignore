@@ -9,3 +9,5 @@
 1dim_fem.dSYM/
 !Pipfile
 evaluate_basis.c
+result/
+PODBASIS_EXTRACTION/
