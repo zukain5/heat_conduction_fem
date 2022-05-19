@@ -47,6 +47,19 @@ int main(void){
 
     int sample_count = 0;
 
+    for (int j=0; j<params_count; j++){
+        fprintf(fp_outputall, "param%d,", j+1);
+    }
+
+    for (int j=0; j<=fem.NE; j++){
+        fprintf(fp_outputall, "value%d", j+1);
+        if (j != fem.NE){
+            fprintf(fp_outputall, ",");
+        }
+    }
+
+    fprintf(fp_outputall, "\n");
+
     for (int i=0; i<series_num; i++){
         double params[PARAMS_MAX] = {0};
         for (int j=0; j<params_count; j++){
@@ -59,10 +72,10 @@ int main(void){
 
         double ans[N+1] = {0};
         fem_solver(ans, fem, bound);
+        for (int j=0; j<params_count; j++){
+            fprintf(fp_outputall, "%lf,", params[j]);
+        }
         for (int j=0; j<=fem.NE; j++){
-            for (int k=0; k<params_count; k++){
-                // fprintf(fp_outputall, "%lf,", params[k]);
-            }
             fprintf(fp_outputall, "%lf", ans[j]);
             if (j != fem.NE){
                 fprintf(fp_outputall, ",");
@@ -78,7 +91,7 @@ int main(void){
         }
     }
 
-    int basis_count = 1;
+    int basis_count = 2;
 
     FILE *fp_parameters;
     if ((fp_parameters = fopen("PARAMETERS", "w")) == NULL){
