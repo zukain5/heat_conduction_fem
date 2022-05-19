@@ -6,3 +6,5 @@
 *.csv
 .vscode/
 1dim_fem.dSYM/
+!Pipfile
+evaluate_basis.c

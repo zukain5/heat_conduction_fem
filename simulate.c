@@ -27,7 +27,7 @@ int main(void){
 
     double params_all[SERIES_MAX][PARAMS_MAX] = {0};
     double params_range[][3] = {
-        {0.0, 1.0, 10},
+        {0.0, 1.0, 100},
     };
 
     int series_num = generate_params_linear(params_count, params_all, params_range);
@@ -59,10 +59,14 @@ int main(void){
         fem_solver(ans, fem, bound);
         for (int j=0; j<=fem.NE; j++){
             for (int k=0; k<params_count; k++){
-                fprintf(fp_outputall, "%lf,", params[k]);
+                // fprintf(fp_outputall, "%lf,", params[k]);
             }
-            fprintf(fp_outputall, "%lf\n", ans[j]);
+            fprintf(fp_outputall, "%lf", ans[j]);
+            if (j != fem.NE){
+                fprintf(fp_outputall, ",");
+            }
         }
+        fprintf(fp_outputall, "\n");
 
         if (floor(i*sample_rate) > floor((i-1)*sample_rate)){
             for (int j=0; j<=fem.NE; j++){
