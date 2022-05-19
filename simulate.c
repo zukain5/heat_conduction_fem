@@ -5,33 +5,42 @@
 #include <math.h>
 
 int main(void){
-    fem_parameter fem;
-    fem.NE = 100;
-    fem.length = 4.0;
-    fem.A = 1.0;
-    fem.lambda = 1.0;
+    // 入力
+    FILE *fp_settings;
+    if ((fp_settings = fopen("SETTINGS", "r")) == NULL){
+        printf("Cannot open SETTINGS.");
+        exit(0);
+    }
 
-    // 境界条件
+    fem_parameter fem;
+    fscanf(fp_settings, "%d %lf %lf %lf", &fem.NE, &fem.length, &fem.A, &fem.lambda);
+
     boundary_condition bound;
-    bound.type_min = 0; // 0が基本・1が自然
-    bound.type_max = 1; // 0が基本・1が自然
-    bound.value_min = 0;
-    bound.value_max = 0;
+    fscanf(fp_settings, "%d %d %lf %lf", &bound.type_min, &bound.type_max, &bound.value_min, &bound.value_max);
+
+    int params_count;
+    fscanf(fp_settings, "%d", &params_count);
+
+    double params_range[PARAMS_MAX][3] = {0};
+    for (int i=0; i<params_count; i++){
+        fscanf(fp_settings, "%lf %lf %lf", &params_range[i][0], &params_range[i][1], &params_range[i][2]);
+    }
+
+    double sample_rate;
+    int basis_count;
+    fscanf(fp_settings, "%lf %d", &sample_rate, &basis_count);
+
+    fclose(fp_settings);
+
+    // 入力ここまで
 
     double x[N+1] = {0};
     for (int i=0; i<=fem.NE; i++){
         x[i] = fem.length / fem.NE * i;
     }
 
-    int params_count = 1;
-
     double params_all[SERIES_MAX][PARAMS_MAX] = {0};
-    double params_range[][3] = {
-        {0.0, 1.0, 100},
-    };
-
     int series_num = generate_params_linear(params_count, params_all, params_range);
-    double sample_rate = 0.1;
 
     FILE *fp_snapshot;
     if ((fp_snapshot = fopen("SNAPSHOT", "w")) == NULL){
@@ -90,8 +99,6 @@ int main(void){
             }            
         }
     }
-
-    int basis_count = 2;
 
     FILE *fp_parameters;
     if ((fp_parameters = fopen("PARAMETERS", "w")) == NULL){

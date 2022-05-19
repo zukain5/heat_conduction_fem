@@ -4,11 +4,11 @@ import pandas as pd
 
 def main():
     # 基底の読み込み
-    with open('PARAMETERS') as f:
-        info_l = f.readlines()
-    basis_count = int(info_l[2])
-    n = int(info_l[0])
-    params_count = 1
+    with open('SETTINGS') as f:
+        settings_l = f.readlines()
+    n = int(settings_l[0].split()[0])+1
+    params_count = int(settings_l[2])
+    basis_count = int(settings_l[4].split()[1])
 
     with open('02_Vk') as f:
         basis_l = f.readlines()
