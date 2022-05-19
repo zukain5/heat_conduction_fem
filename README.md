@@ -12,7 +12,7 @@
 ```
 
 ## 実行方法
-1. simulate.cに諸々の条件を記述する
+1. `SETTINGS`と`simulate.c`に諸々の条件を記述する
 2. `make re`を実行する
 3. `./simulate.out`を実行する
 4. 出力された`PARAMETERS`と`SNAPSHOT`をPODBASIS_EXTRACTIONにコピペする
