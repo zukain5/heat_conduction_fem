@@ -11,6 +11,8 @@ double Q_linear(double x, double *params);
 
 #ifdef __cplusplus
 extern "C" {
-    extern int generate_params_linear(int params_count, double params_all[][PARAMS_MAX], double params_range[][3]);
+#endif  // __cplusplus
+int generate_params_linear(int params_count, double params_all[][PARAMS_MAX], double params_range[][3]);
+#ifdef __cplusplus
 }
 #endif  // __cplusplus

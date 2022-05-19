@@ -3,5 +3,6 @@
 !*.*
 *.out
 *.o
+*.csv
 .vscode/
 1dim_fem.dSYM/
