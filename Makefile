@@ -10,6 +10,7 @@ PP				= clang++
 CPPFLAGS		= -I$(CPPUTEST_HOME)/include
 LD_LIBRARIES	= -L$(CPPUTEST_HOME)/lib -lCppUTest -lCppUTestExt
 LIBS			= -lm
+OUTPUTS			= SNAPSHOT PARAMETERS OUTPUTALL.csv
 
 $(TARGET):  $(OBJS)
 			$(CC) $(OBJS) -o $(TARGET) $(LIBS)
@@ -28,5 +29,6 @@ clean:
 fclean:     clean
 			rm -f $(TARGET)
 			rm -f $(TEST_TARGET)
+			rm -f $(OUTPUTS)
 
 re:         fclean all
