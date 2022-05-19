@@ -80,6 +80,17 @@ double Q_linear(double x, double *params){
     return coefficient * x;
 }
 
+double Q_devide_3(double x, double *params){
+    double length = 4.0;
+    if (x < length/3){
+        return params[0]*x/(length/3);
+    } else if (length/3 <= x && x <= 2*length/3){
+        return params[0]*(2*length/3 - x)/(length/3) + params[1]*(x - length/3)/(length/3);
+    } else {
+        return params[1]*(length - x)/(length/3);
+    }
+}
+
 int generate_params_linear(int params_count, double params_all[][PARAMS_MAX], double params_range[][3]){
     int loop[SERIES_MAX] = {0};
     int loop_max[SERIES_MAX] = {0};
