@@ -75,7 +75,7 @@ int main(void){
             params[j] = params_all[i][j];
         }
         double Q[N+1] = {0};
-        calc_Q_from_fucntion(Q_const, fem.NE, Q, x, params);
+        calc_Q_from_fucntion(Q_devide_3, fem.NE, Q, x, params);
 
         fem.Q = &Q;
 
